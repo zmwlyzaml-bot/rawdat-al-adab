@@ -9,28 +9,18 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// إعدادات التخزين المؤقت (Cache) لمدة ساعة
 const cache = new NodeCache({ stdTTL: 3600 });
-
-// تخزين الزوار في الذاكرة
 const visitors = new Set();
 
 app.use(cors());
 app.use(express.json());
 app.use(requestIp.mw());
 
-// تحديد مسار المجلد العام بشكل مطلق
-const publicPath = path.join(__dirname, 'public');
+// خدمة الملفات من المجلد الرئيسي مباشرة
+app.use(express.static(__dirname));
 
-// خدمة الملفات الثابتة
-app.use(express.static(publicPath));
-
-// قنوات تليجرام المطلوبة
 const CHANNELS = ['Rawwda', 'QQ_Y8I', 'gazl30', 'for47sev'];
 
-/**
- * دالة لتنظيف وتصفية النصوص بناءً على القواعد الصارمة
- */
 function cleanText(text) {
     if (!text) return null;
     const hasUrl = /https?:\/\/[^\s]+/.test(text);
@@ -71,7 +61,6 @@ async function fetchTelegramTexts() {
     return result;
 }
 
-// API Endpoints
 app.get('/api/texts', async (req, res) => {
     const texts = await fetchTelegramTexts();
     res.json(texts);
@@ -84,9 +73,9 @@ app.get('/api/visit', (req, res) => {
     res.json({ count: visitors.size });
 });
 
-// توجيه أي طلب غير معروف إلى index.html لضمان عمل الـ SPA
+// خدمة index.html لأي مسار آخر
 app.get('*', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(port, () => {
