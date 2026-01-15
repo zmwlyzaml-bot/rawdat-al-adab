@@ -185,13 +185,11 @@
                 localStorage.setItem('theme', newTheme);
             });
 
-            // استخدام رابط API مباشر ومستقر
-            const API_URL = 'https://rawdat-al-adab.onrender.com/api';
-
             async function fetchData() {
                 try {
-                    fetch(`${API_URL}/visit`).then(r => r.json()).then(d => visitorCount.textContent = d.count || 1).catch(() => visitorCount.textContent = '1');
-                    const res = await fetch(`${API_URL}/texts`);
+                    // استخدام مسارات نسبية لضمان العمل على أي نطاق
+                    fetch(`/api/visit`).then(r => r.json()).then(d => visitorCount.textContent = d.count || 1).catch(() => visitorCount.textContent = '1');
+                    const res = await fetch(`/api/texts`);
                     const texts = await res.json();
                     if (texts && texts.length > 0) {
                         textContainer.textContent = texts[Math.floor(Math.random() * texts.length)];
