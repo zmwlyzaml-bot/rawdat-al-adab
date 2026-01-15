@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
@@ -17,7 +18,12 @@ const visitors = new Set();
 app.use(cors());
 app.use(express.json());
 app.use(requestIp.mw());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// إضافة مسار افتراضي لخدمة index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // قنوات تليجرام المطلوبة
 const CHANNELS = ['Rawwda', 'QQ_Y8I', 'gazl30', 'for47sev'];
